@@ -1,66 +1,53 @@
+
 import streamlit as st
 import pandas as pd
 from openpyxl import load_workbook
 import os
 
-# Define a function to store data in an Excel file
-def save_to_excel(data, filename='form_data.xlsx'):
-    df = pd.DataFrame([data])
 
-    if not os.path.exists(filename):
-        # Create a new Excel file if it doesn't exist
-        df.to_excel(filename, index=False)
+
+def save_data_to_excel(name, Choice):
+    file_name = 'form_data.xlsx'
+    data = pd.DataFrame([[name, choice]], columns=['Name', 'Choice'])
+
+    if not os.path.exists(file_name):
+        # If the file doesn't exist, create it
+        data.to_excel(file_name, index=False)
     else:
         try:
-            # Load the existing workbook
-            book = load_workbook(filename)
-            writer = pd.ExcelWriter(filename, engine='openpyxl')
-            writer.book = book
+            with pd.ExcelWriter(file_name, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                # Getting the last row in the existing sheet
+                book = load_workbook(file_name)
+                sheet = book.active
+                startrow = sheet.max_row
 
-            # Determine the last row in the existing sheet
-            startrow = book['Sheet1'].max_row
-
-            # Append the new data
-            df.to_excel(writer, index=False, header=False, startrow=startrow)
-            writer.save()
+                data.to_excel(writer, index=False, header=False, startrow=startrow)
         except Exception as e:
-            st.error(f"An error occurred: {e}")
+            st.error(f"Error: {e}")
 
-# Function to load and display Excel data
-def load_and_display_excel(filename='form_data.xlsx'):
+def display(filename = 'form_data.xlsx'):
     if os.path.exists(filename):
         df = pd.read_excel(filename)
-        st.dataframe(df)  # Display the DataFrame in Streamlit
+        st.dataframe(df)
     else:
-        st.warning("No data found. Please submit the form first.")
+        st.warning("No data available to show, fill the form first")
 
-# Streamlit App UI
-st.title("User Input Form")
 
-# Create a form
-with st.form(key="user_form"):
-    # 1st Input: Text box
-    name = st.text_input("Enter your name")
+# Streamlit form
+st.title('Data Collection Form')
 
-    # 2nd Input: Radio button
-    gender = st.radio("Select your gender", ("Male", "Female", "Other"))
+with st.form(key='data_form'):
+    name = st.text_input('Enter your name')
+    choice = st.radio('Gender:', ['Male', 'Female', 'Other'])
 
-    # Submit button
-    submit_button = st.form_submit_button(label="Submit")
+    submit_button = st.form_submit_button(label='Submit')
 
-# When form is submitted
+if st.button('Load Data'):
+    display()
+
 if submit_button:
-    if name and gender:
-        # Prepare data for Excel
-        data = {"Name": name, "Gender": gender}
-        
-        # Save the data to Excel
-        save_to_excel(data)
-
-        # Confirmation message
-        st.success(f"Data saved! Name: {name}, Gender: {gender}")
-
-        # Display the updated Excel data
-        load_and_display_excel()
+    if name and choice:
+        save_data_to_excel(name, choice)
+        st.success(f"Data saved: {name}, {choice}")
     else:
-        st.error("Please provide both inputs.")
+        st.error("Please enter your name.")
