@@ -6,9 +6,9 @@ import os
 
 
 
-def save_data_to_excel(Name, Gender):
+def save_data_to_excel(name, Gender):
     file_name = 'form_data.xlsx'
-    data = pd.DataFrame([[Name, Gender]], columns=['Name', 'Gender'])
+    data = pd.DataFrame([[name, gender]], columns=['Name', 'Gender'])
 
     if not os.path.exists(file_name):
         # If the file doesn't exist, create it
@@ -46,7 +46,7 @@ if st.button('Load Data'):
     display()
 
 if submit_button:
-    if name and choice:
+    if Name and Gender:
         save_data_to_excel(Name, Gender)
         st.success(f"Data saved: {Name}, {Gender}")
     else:
