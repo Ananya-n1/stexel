@@ -8,7 +8,7 @@ import os
 
 def save_data_to_excel(name, Gender):
     file_name = 'form_data.xlsx'
-    data = pd.DataFrame([[name, gender]], columns=['Name', 'Gender'])
+    data = pd.DataFrame([[name, Gender]], columns=['Name', 'Gender'])
 
     if not os.path.exists(file_name):
         # If the file doesn't exist, create it
