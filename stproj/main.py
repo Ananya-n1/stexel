@@ -12,20 +12,27 @@ def save_to_excel(data, filename='form_data.xlsx'):
         df.to_excel(filename, index=False)
     else:
         try:
-            # Append to the existing Excel file
-            with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-                # Load the existing workbook and sheet
-                book = load_workbook(filename)
-                writer.book = book
+            # Load the existing workbook
+            book = load_workbook(filename)
+            writer = pd.ExcelWriter(filename, engine='openpyxl')
+            writer.book = book
 
-                # Find the last row in the existing sheet
-                startrow = book['Sheet1'].max_row
+            # Determine the last row in the existing sheet
+            startrow = book['Sheet1'].max_row
 
-                # Append the new data to the existing file
-                df.to_excel(writer, sheet_name='Sheet1', index=False, header=False, startrow=startrow)
-
+            # Append the new data
+            df.to_excel(writer, index=False, header=False, startrow=startrow)
+            writer.save()
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
+# Function to load and display Excel data
+def load_and_display_excel(filename='form_data.xlsx'):
+    if os.path.exists(filename):
+        df = pd.read_excel(filename)
+        st.dataframe(df)  # Display the DataFrame in Streamlit
+    else:
+        st.warning("No data found. Please submit the form first.")
 
 # Streamlit App UI
 st.title("User Input Form")
@@ -52,6 +59,8 @@ if submit_button:
 
         # Confirmation message
         st.success(f"Data saved! Name: {name}, Gender: {gender}")
+
+        # Display the updated Excel data
+        load_and_display_excel()
     else:
         st.error("Please provide both inputs.")
-
