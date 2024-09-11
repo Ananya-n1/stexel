@@ -8,7 +8,7 @@ import os
 
 def save_data_to_excel(name, Choice):
     file_name = 'form_data.xlsx'
-    data = pd.DataFrame([[name, choice]], columns=['Name', 'Choice'])
+    data = pd.DataFrame([[name, gender]], columns=['Name', 'Gender'])
 
     if not os.path.exists(file_name):
         # If the file doesn't exist, create it
@@ -38,7 +38,7 @@ st.title('Data Collection Form')
 
 with st.form(key='data_form'):
     name = st.text_input('Enter your name')
-    choice = st.radio('Gender:', ['Male', 'Female', 'Other'])
+    gender = st.radio('Gender:', ['Male', 'Female', 'Other'])
 
     submit_button = st.form_submit_button(label='Submit')
 
@@ -47,7 +47,7 @@ if st.button('Load Data'):
 
 if submit_button:
     if name and choice:
-        save_data_to_excel(name, choice)
-        st.success(f"Data saved: {name}, {choice}")
+        save_data_to_excel(name, gender)
+        st.success(f"Data saved: {name}, {gender}")
     else:
         st.error("Please enter your name.")
