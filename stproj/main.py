@@ -6,7 +6,7 @@ import os
 
 
 
-def save_data_to_excel(name, Choice):
+def save_data_to_excel(Name, Gender):
     file_name = 'form_data.xlsx'
     data = pd.DataFrame([[Name, Gender]], columns=['Name', 'Gender'])
 
